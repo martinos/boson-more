@@ -46,7 +46,7 @@ module Boson
     def abort_with(message)
       if verbose || options[:backtrace]
         if $!.respond_to?(:full_message)
-          message = $!.full_message
+          message = $!.full_message(order: :top)
         else
           message += "\nOriginal error: #{$!}\n  #{$!.backtrace.join("\n  ")}"
         end
