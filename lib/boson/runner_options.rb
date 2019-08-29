@@ -1,4 +1,4 @@
-require 'boson/save'
+require "boson/save"
 
 module Boson
   module RunnerOptions
@@ -16,10 +16,10 @@ module Boson
       Boson.verbose = true if options[:verbose]
 
       if @options.key?(:index)
-        Index.update(:verbose=>true, :libraries=>@options[:index])
+        Index.update(:verbose => true, :libraries => @options[:index])
         @index_updated = true
       elsif !@options[:help] && @command && Boson.can_invoke?(@command)
-        Index.update(:verbose=>@options[:verbose])
+        Index.update(:verbose => @options[:verbose])
         @index_updated = true
       end
 
@@ -29,7 +29,7 @@ module Boson
 
     def default_libraries
       libs = super
-      @options[:unload] ?  libs.select {|e| e !~ /#{@options[:unload]}/} : libs
+      @options[:unload] ? libs.select { |e| e !~ /#{@options[:unload]}/ } : libs
     end
 
     def update_index
@@ -46,7 +46,7 @@ module Boson
     def abort_with(message)
       if verbose || options[:backtrace]
         if $!.respond_to?(:full_message)
-          message = $!.full_message(order: :top)
+          message += "\nOriginal error: #{$!}\n  #{$!.full_message(order: :top)}"
         else
           message += "\nOriginal error: #{$!}\n  #{$!.backtrace.join("\n  ")}"
         end
@@ -59,7 +59,7 @@ module Boson
       if @options[:verbose]
         Manager.load [Boson::Commands::Core]
         puts "\n\nDEFAULT COMMANDS"
-        Boson.invoke :commands, :fields=>["name", "usage", "description"], :description=>false
+        Boson.invoke :commands, :fields => ["name", "usage", "description"], :description => false
       end
     end
 
@@ -80,15 +80,16 @@ module Boson
   if defined? BinRunner
     class BinRunner < BareRunner
       GLOBAL_OPTIONS.update({
-        :backtrace=>{:type=>:boolean, :desc=>'Prints full backtrace'},
-        :verbose=>{:type=>:boolean, :desc=>"Verbose description of loading libraries, errors or help"},
-        :index=>{
-          :type=>:array, :desc=>"Libraries to index. Libraries must be passed with '='.",
-          :bool_default=>nil, :values=>all_libraries, :regexp=>true, :enum=>false},
-        :pager_toggle=>{:type=>:boolean, :desc=>"Toggles Hirb's pager"},
-        :unload=>{:type=>:string, :desc=>"Acts as a regular expression to unload default libraries"},
-        :load=>{:type=>:array, :values=>all_libraries, :regexp=>true, :enum=>false,
-          :desc=>"A comma delimited array of libraries to load"}
+        :backtrace => { :type => :boolean, :desc => "Prints full backtrace" },
+        :verbose => { :type => :boolean, :desc => "Verbose description of loading libraries, errors or help" },
+        :index => {
+          :type => :array, :desc => "Libraries to index. Libraries must be passed with '='.",
+          :bool_default => nil, :values => all_libraries, :regexp => true, :enum => false,
+        },
+        :pager_toggle => { :type => :boolean, :desc => "Toggles Hirb's pager" },
+        :unload => { :type => :string, :desc => "Acts as a regular expression to unload default libraries" },
+        :load => { :type => :array, :values => all_libraries, :regexp => true, :enum => false,
+                   :desc => "A comma delimited array of libraries to load" },
       })
       extend RunnerOptions
     end
